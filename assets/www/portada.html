@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<HTML>
+<head>
+<meta charset="utf-8">
+<title>Promos al paso</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--<script src="http://debug.phonegap.com/target/target-script-min.js#promosalpaso1"></script>-->
+<script src="scripts/environment.js"></script>
+<script src="scripts/jquery-1.10.1.min.js"></script>
+<script src="scripts/jquery.mobile-1.3.1.min.js"></script>
+<!--<script src="scripts/cordova-2.2.0.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>-->
+<script src="scripts/route-maps.js"></script>
+<script src="scripts/promosalpaso.js"></script>
+<script src="scripts/promosalpaso-mobile.js"></script>
+<link href="css/jquery.mobile.structure-1.3.1.css" rel="stylesheet" type="text/css"/>
+<link href="css/pap_styles.css" rel="stylesheet" type="text/css"/>
+<link href="css/pap.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div data-role="page" id="main" data-theme="a">
+        <div data-role="content" class="mainbgr">
+            <div class="row-fluid">
+                <div class="span10 offset1">
+                    <ul data-inset="true" data-role="listview" style="margin-top: 9em;">
+                        <li>
+                            <a href="#" onclick="refreshPromoList();" class="btn btn-large" data-shadow="true"><i class="icon-map-marker"></i> Promos cercanas</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="gotoSearch();" class="btn btn-large" data-shadow="true"><i class="icon-search"></i> Buscar por ciudad</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="gotoCategories();" class="btn btn-large" data-shadow="true"><i class="icon-filter"></i> Filtrar categorías</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="gotoFavoritos();" class="btn btn-large" data-shadow="true"><i class="icon-star"></i> Mis favoritas</a>
+                        </li>
+                        <li>
+                            <a href="#contacto" class="btn btn-large" data-shadow="true"><i class="icon-envelope"></i> Contacto</a>
+                        </li>
+                    
+                    </ul>    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
