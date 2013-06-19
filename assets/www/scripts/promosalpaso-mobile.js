@@ -42,7 +42,7 @@ jQuery(document).on("click",'#a_search_button', function() {
 jQuery(document).delegate( "#page-map", "pagebeforeshow", function(event){
     initialize();
     var _width = jQuery(window).width();
-    var _height = jQuery(window).height();
+    var _height = jQuery(window).height() - jQuery("#page-map").find('[data-role="header"]').outerHeight();
     jQuery("#map_canvas").css({height:_height});
     jQuery("#map_canvas").css({width:_width});
     calcRoute();
