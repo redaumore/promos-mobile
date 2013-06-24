@@ -105,8 +105,7 @@ span>sup{
     filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
 }
 .image{
-    height: 3.5em;
-    width: 3.5em;
+    width: 4em;
 }
 .arrow-r{
     background-image: url(images/arrow.png);
@@ -133,7 +132,7 @@ span>sup{
 .mainbgr{
         background-image:url('images/logo-promosalpaso1.1.png');
         background-repeat:no-repeat;
-        background-size: 50%;
+        /*background-size: 50%;*/
         background-position:top center;
 }
 

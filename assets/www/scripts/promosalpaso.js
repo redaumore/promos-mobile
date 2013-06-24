@@ -3,16 +3,6 @@
     -activePromotion
     -lastSearch
 */
-
-/*RAMOS MEJIA
-var _lat = "-34.6463";
-var _lng = "-58.5648";
-*/
-
-
-/* CASANOVA */
-  //var _lat = "-34,707320691758";
-  //var _lng = "-58,583339428671";
 var _lat;
 var _lng;
 var _promo_lat;
@@ -27,27 +17,22 @@ var _last_update;
 
 function refreshPromoList(){
 	if(_lat == null || _lng == null){
-		showMessage('No se encontraron promos. Intenta nuestra b√∫squeda manual.', 'Info', 'Ok');
-        gotoSearch();
+		showMessage('No hay informaciÛn acerca de tu localizaciÛn. Intenta nuestra b˙squeda por ciudad.', 'Info', 'Ok');
+        //gotoSearch();
         return;
 	}
 	$.mobile.showPageLoadingMsg('a', "Buscando promos...", false);
-	loadPromoList(); 
+	navigator.geolocation.getCurrentPosition(onSuccessPromoList, 
+	        onError_highAccuracy, 
+	        {maximumAge:600000, timeout:10000, enableHighAccuracy: false});
 }
 
-function setLastUpdate(timestamp){
-    _last_update = timestamp.toISOString();
-    _last_update = _last_update.replace("T"," ");
-    _last_update = _last_update.replace("Z","");    
-}
-
-function onBackKeyDown(){
-    if(_inFavorites){
-        _inFavorites = false;
-        loadPromoList();
-    }
-            
-}
+function onSuccessPromoList(position) {
+	_lat = position.coords.latitude;
+	_lng = position.coords.longitude;
+	console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
+	loadPromoList();
+};
 
 function loadPromoList(){
     $.ajax({
@@ -88,11 +73,14 @@ function loadPromoList(){
         error: function(jqXHR, textStatus, errorThrown){
             if(_firstAttemp){
                 _firstAttemp = false;
-                console.log("LoadPromoList-1: ".jqXHR.responseText);
+                console.log("LoadPromoList-1: ".textStatus);
                 loadPromoList();
             }
             else{
-            	console.log("LoadPromoList-2: ".jqXHR.responseText);
+            	if(jqXHR.responseText != null)
+            		console.log("LoadPromoList-2: ".jqXHR.responseText);
+            	else
+            		console.log("LoadPromoList-2(status): ".textStatus);
 	            showMessage('Hubo un error recuperando las promociones. Por favor intentalo m√°s tarde...', 'Error', 'Ok');
 	            $.mobile.hidePageLoadingMsg();
             }
@@ -366,7 +354,7 @@ liString += '                            <div style="border-bottom: solid 1px #9
 liString += '                            <div style="vertical-align: middle; text-align: center"><span class="distancia">#DISTANCIA#</span></div>';
 liString += '                        </div>';
 liString += '                     </td>';
-liString += '                     <td class="arrow-r ui-icon-shadow">&nbsp;</td>';
+//liString += '                     <td class="arrow-r ui-icon-shadow">&nbsp;</td>';
 liString += '                  </tr>';
 liString += '               </table>';
 liString += '            </a></div></div></li>';
@@ -385,13 +373,16 @@ function formatPrice(price){
     return formatedPrice;
 }
 
-//onSuccess Callback
-//This method accepts a `Position` object, which contains
-//the current GPS coordinates
+function getGeoLocation(){
+	navigator.geolocation.getCurrentPosition(onSuccess, 
+	        onError_highAccuracy, 
+	        {maximumAge:600000, timeout:10000, enableHighAccuracy: false});
+}
+
 var onSuccess = function(position) {
-    _lat = position.coords.latitude;
-	_lng = position.coords.longitude;
-    console.log("onSuccess");
+_lat = position.coords.latitude;
+_lng = position.coords.longitude;
+console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
 };
 
 function onError_highAccuracy(error) {
@@ -404,7 +395,7 @@ function onError_highAccuracy(error) {
         navigator.geolocation.getCurrentPosition(
                    onSuccess, 
                    onError,
-                   {maximumAge:600000, timeout:10000, enableHighAccuracy: false});
+                   {maximumAge:600000, timeout:10000, enableHighAccuracy: true});
         return;
     //}
 }
@@ -413,8 +404,6 @@ function onError_highAccuracy(error) {
 function onError(error) {
     msg = 'No se pudo obtener datos del localizaci√≥n. Te sugerimos realizar una b√∫squeda por direcci√≥n/localidad. (SJ)';
     showMessage(msg, 'Info', 'OK');
-    _lat = "-34.681774410598"; 
-    _lng = "-58.561710095183" ;
     //gotoSearch();
     /*SAN JUSTO*/
 	//_lat = "-34.681774410598"; 
@@ -440,6 +429,7 @@ function getRegionsUpdate(){
                 console.log("getRegionUpdate: llamada a servicio exitosa");
                 if(data == null){
                     console.log("No se actualizaron regiones");
+                    $.mobile.hidePageLoadingMsg();
                     return;
                 }
                 addRegions(data.province, data.city);
@@ -548,6 +538,7 @@ function querySearchSuccess(tx, results) {
     if(len = 1){
         _lat = results.rows.item(0).latitude;
         _lng = results.rows.item(0).longitude;
+        console.log("Geoposition search: "+_lat+", "+_lng);
         loadPromoList();
         $.mobile.changePage(jQuery("#one"));
     }
