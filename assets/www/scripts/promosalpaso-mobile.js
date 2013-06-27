@@ -10,7 +10,6 @@ jQuery(document).ready(function(){
 		console.log(_margin_top);
 		jQuery("#main_div").css("background-size",_margin_top);
 		jQuery("#main_menu").css("margin-top",_margin_top);
-        $.mobile.defaultPageTransition = 'none';
         _last_update = window.localStorage.getItem("last_update");    
         if(_last_update == null)
             setLastUpdate(new Date(0));
@@ -49,6 +48,7 @@ jQuery(document).on("click",'#a_search_button', function() {
 });
 
 jQuery(document).delegate( "#page-map", "pagebeforeshow", function(event){
+	event.preventDefault();
 	var _width = jQuery(window).width();
     var _height = jQuery(window).height() - jQuery("#page-map").find('[data-role="header"]').outerHeight();
     jQuery("#map_canvas").css({height:_height});
@@ -72,3 +72,6 @@ function setLastUpdate(timestamp){
     window.localStorage.setItem("last_update", _last_update);
 }
 
+function gotoCategories(){
+	
+}

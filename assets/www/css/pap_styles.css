@@ -51,16 +51,10 @@
 }
 .ui-body-a,
 .ui-overlay-a {
-	border: 1px solid #2e2e2e /*{a-body-border}*/;
+	border: 1px solid #ff6a15 /*{a-body-border}*/;
 	color: #ff6a15 /*{a-body-color}*/;
 	text-shadow: 0 /*{a-body-shadow-x}*/ 1px /*{a-body-shadow-y}*/ 0 /*{a-body-shadow-radius}*/ #3D3D3D /*{a-body-shadow-color}*/;
-	background: #292929 /*{a-body-background-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #2d2d2d /*{a-body-background-start}*/), to( #242424 /*{a-body-background-end}*/)); /* Saf4+, Chrome */
-	background-image: -webkit-linear-gradient( #2d2d2d /*{a-body-background-start}*/, #242424 /*{a-body-background-end}*/); /* Chrome 10+, Saf5.1+ */
-	background-image:    -moz-linear-gradient( #2d2d2d /*{a-body-background-start}*/, #242424 /*{a-body-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #2d2d2d /*{a-body-background-start}*/, #242424 /*{a-body-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #2d2d2d /*{a-body-background-start}*/, #242424 /*{a-body-background-end}*/); /* Opera 11.10+ */
-	background-image:         linear-gradient( #2d2d2d /*{a-body-background-start}*/, #242424 /*{a-body-background-end}*/);
+	background: #292929;
 }
 .ui-overlay-a {
 	background-image: none;

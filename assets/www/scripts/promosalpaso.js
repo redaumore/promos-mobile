@@ -50,6 +50,7 @@ function loadPromoList(){
                 console.log("loadPromoList: llamada a servicio exitosa");
                 window.localStorage.setItem("lastSearch", JSON.stringify(data));
                 if(data.length == 0){
+                	$.mobile.hidePageLoadingMsg();
                     if(jQuery.mobile.activePage[0].id == "main"){
                         showMessage('No se encontraron promos. Intenta nuestra búsqueda manual.', 'Info', 'Ok');
                         event.preventDefault();
@@ -81,7 +82,7 @@ function loadPromoList(){
             		console.log("LoadPromoList-2: ".jqXHR.responseText);
             	else
             		console.log("LoadPromoList-2(status): ".textStatus);
-	            showMessage('Hubo un error recuperando las promociones. Por favor intentalo más tarde...', 'Error', 'Ok');
+	            showMessage('Error recuperando promos. Por favor intentalo luego...', 'Error', 'Ok');
 	            $.mobile.hidePageLoadingMsg();
             }
         }
@@ -99,15 +100,18 @@ function loadPromoListByIds(ids){
         contentType: "application/json; charset=utf-8",
         timeout: 10000,
         beforeSend: function (jqXHR, settings) {
-            url = settings.url + "?" + settings.data;
+            console.log("Favoritas: "+ settings.url + "?" + settings.data);
         },
         success: function(data, status){
-                if(data.length == 0)
-                    $.mobile.changePage(jQuery("#nopromos"));
-                document.getElementById("promolist").innerHTML = "";                        
-                $.each(data, function(i,item){
-                    document.getElementById("promolist").innerHTML += getPromoRecord(item);
-                });
+                if(data.length != 0){
+                	var promolist = "";
+                    $.each(data, function(i,item){
+                        promolist += getPromoRecord(item);
+                    });
+                    jQuery("#promolist").html(promolist);
+                    $.mobile.changePage(jQuery("#one"));
+                    $.mobile.hidePageLoadingMsg();
+                }
         },
         error: function(jqXHR, textStatus, errorThrown){
             if(_firstAttempFav){
@@ -115,6 +119,7 @@ function loadPromoListByIds(ids){
                 loadPromoListByIds(ids);
             }
             else{
+            	$.mobile.hidePageLoadingMsg();
                 showMessage('Hubo un error recuperando las favoritas. Por favor intentalo más tarde...', 'Error', 'Ok');
             }
         }
@@ -303,6 +308,7 @@ function gotoFavoritos(){
     var favoritos = window.localStorage.getItem("favoritos");
     if(favoritos != null)
         if(favoritos != ""){
+        	$.mobile.showPageLoadingMsg('a', "Recuperando favoritas...", false);
             _inFavorites = true;
             loadPromoListByIds(favoritos.substring(0, favoritos.lastIndexOf(",")));
             return;
@@ -374,6 +380,7 @@ function formatPrice(price){
 }
 
 function getGeoLocation(){
+	$.mobile.showPageLoadingMsg('a', "Buscando tu localizaci�n...", false);
 	navigator.geolocation.getCurrentPosition(onSuccess, 
 	        onError_highAccuracy, 
 	        {maximumAge:600000, timeout:10000, enableHighAccuracy: false});
@@ -383,15 +390,16 @@ var onSuccess = function(position) {
 _lat = position.coords.latitude;
 _lng = position.coords.longitude;
 console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
+jQuery.mobile.hidePageLoadingMsg();
 };
 
 function onError_highAccuracy(error) {
     var msg = "";
     //if(error.code == 2)
-        msg = 'No se pudo obtener datos del GPS. Se localizará por 3G, por lo que la localización puede presentar un desvío de 150 mts aproximadamente.';
+        //msg = 'No se pudo obtener datos del GPS. Se localizará por 3G, por lo que la localización puede presentar un desvío de 150 mts aproximadamente.';
         // Attempt to get GPS loc timed out after 5 seconds, 
         // try low accuracy location
-        showMessage(msg, 'GPS', 'OK');
+        //showMessage(msg, 'GPS', 'OK');
         navigator.geolocation.getCurrentPosition(
                    onSuccess, 
                    onError,
@@ -402,7 +410,8 @@ function onError_highAccuracy(error) {
 
 //onError Callback receives a PositionError object
 function onError(error) {
-    msg = 'No se pudo obtener datos del localización. Te sugerimos realizar una búsqueda por dirección/localidad. (SJ)';
+	$.mobile.hidePageLoadingMsg();
+    msg = 'No se pudo obtener tu localizaci�n. Te sugerimos buscar por ciudad.';
     showMessage(msg, 'Info', 'OK');
     //gotoSearch();
     /*SAN JUSTO*/
@@ -536,11 +545,11 @@ function querySearchDB(tx, city_id) {
 function querySearchSuccess(tx, results) {
     len = results.rows.length;
     if(len = 1){
+    	$.mobile.showPageLoadingMsg('a', "Buscando promos...", false);
         _lat = results.rows.item(0).latitude;
         _lng = results.rows.item(0).longitude;
-        console.log("Geoposition search: "+_lat+", "+_lng);
+        console.log("Geoposition search: "+results.rows.item(0).name+" "+_lat+", "+_lng);
         loadPromoList();
-        $.mobile.changePage(jQuery("#one"));
     }
 }
 function errorSearchDB(err){

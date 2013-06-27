@@ -59,7 +59,7 @@ body{ font-size: .5em; }
     vertical-align: middle;
     top: 0;
     width: 40px;
-    position: absolute;
+    /*position: absolute;*/
 }
 .desde-det{
     font-size: 1.5em;
