@@ -16,6 +16,7 @@ var _inFavorites = false;
 var _last_update;
 
 function refreshPromoList(){
+	event.preventDefault();
 	if(_lat == null || _lng == null){
 		showMessage('No hay información acerca de tu localización. Intenta nuestra búsqueda por ciudad.', 'Info', 'Ok');
         //gotoSearch();
@@ -82,14 +83,14 @@ function loadPromoList(){
             		console.log("LoadPromoList-2: ".jqXHR.responseText);
             	else
             		console.log("LoadPromoList-2(status): ".textStatus);
-	            showMessage('Error recuperando promos. Por favor intentalo luego...', 'Error', 'Ok');
-	            $.mobile.hidePageLoadingMsg();
-            }
+            	$.mobile.hidePageLoadingMsg();
+	            showMessage('Error en el servicio. Por favor intentalo en unos minutos...', 'Error', 'Ok');
+	        }
         }
     });
 }
 
-function loadPromoListByIds(ids){
+function loadPromoListByIds(ids, fromFavoritos){
 	$.ajax({
         url: _baseServUri + 'getpromolistbyids',
         dataType: 'jsonp',
@@ -105,10 +106,20 @@ function loadPromoListByIds(ids){
         success: function(data, status){
                 if(data.length != 0){
                 	var promolist = "";
-                    $.each(data, function(i,item){
+                	var newfavoritos = "";
+                	oldfavoritos = ids.split(",");
+                	$.each(data, function(i,item){
                         promolist += getPromoRecord(item);
+                        if(fromFavoritos){
+                        	for(i=0;i<oldfavoritos.length;i++){
+                        		if(oldfavoritos[i]==item.promotion_id)
+                        			newfavoritos += item.promotion_id+",";
+	                        }	
+                    	}
                     });
-                    jQuery("#promolist").html(promolist);
+            	    if(fromFavoritos)
+            	    	window.localStorage.setItem("favoritos", newfavoritos);
+                	jQuery("#promolist").html(promolist);
                     $.mobile.changePage(jQuery("#one"));
                     $.mobile.hidePageLoadingMsg();
                 }
@@ -122,7 +133,7 @@ function loadPromoListByIds(ids){
             	$.mobile.hidePageLoadingMsg();
                 showMessage('Hubo un error recuperando las favoritas. Por favor intentalo mÃ¡s tarde...', 'Error', 'Ok');
             }
-        }
+        },
     });
 }
 
@@ -132,7 +143,8 @@ function getPromoRecord(promo){
     if(promo.path != "NOPIC")
     	liString = liString.replace("#IMAGE#", promo.path);
     else
-    	liString = liString.replace("#IMAGE#", "images/photo_error.png");
+    	liString = liString.replace("#IMAGE#", promo.logo);
+    	//liString = liString.replace("#IMAGE#", "images/photo_error.png");
     liString = liString.replace("#COMERCIO#", promo.name);
     liString = liString.replace("#DESCRIPCION#", promo.short_description);        
     liString = liString.replace("#PROMO#", promo.displayed_text);
@@ -181,12 +193,12 @@ function callPromoDetail(promotion_id){
                 $.mobile.changePage(jQuery("#detail"));
         },
         error: function(jqXHR, textStatus, errorThrown){
+        	$.mobile.hidePageLoadingMsg();
             showMessage(
             'Hubo un error accediendo a los datos de la Promo. Por favor intenta mÃ¡s tarde...',
             'Error',
             'OK'
             );
-            $.mobile.hidePageLoadingMsg();
         }
     });
     return promotion_detail;
@@ -245,13 +257,14 @@ function loadPromoDetail(item){
     if(isFavorite(item.promotion_id)){
         jQuery("#favtext").html("Quitar de Favoritos");
         jQuery("#linkFavorite").unbind("click");
-        jQuery("#linkFavorite").click(function(){deleteFavorite(item.promotion_id);});
+        jQuery("#linkFavorite").click(function(){frontDeleteFavorite(item.promotion_id);});
     }
     else{
         jQuery("#favtext").html("Agregar a Favoritos");
         jQuery("#linkFavorite").unbind("click");
         jQuery("#linkFavorite").click(function(){saveFavorite();});
     }
+    jQuery("#barmaspromos").html("+ promos de "+item.name);
     _promo_lat = item.latitude;
     _promo_lng = item.longitude;
 }
@@ -288,8 +301,14 @@ function deleteFavorite(id){
     if(arrFav.toString()=="")
         window.localStorage.removeItem("favoritos");
     else
-        window.localStorage.setItem("favoritos", arrFav.toString());
-    showMessage("La promo se ha eliminado de tus favoritos.", "Info", "Ok");
+        window.localStorage.setItem("favoritos", arrFav.toString()+",");
+}
+
+function frontDeleteFavorite(id){
+	deleteFavorite(id);
+	showMessage("La promo se ha eliminado de tus favoritos.", "Info", "Ok");
+	gotoFavoritos();
+	
 }
 
 function isFavorite(id){
@@ -310,10 +329,11 @@ function gotoFavoritos(){
         if(favoritos != ""){
         	$.mobile.showPageLoadingMsg('a', "Recuperando favoritas...", false);
             _inFavorites = true;
-            loadPromoListByIds(favoritos.substring(0, favoritos.lastIndexOf(",")));
+            loadPromoListByIds(favoritos.substring(0, favoritos.lastIndexOf(",")), true);
             return;
         }
-    showMessage('No tienes favoritos.', 'Info', 'Ok');        
+    $.mobile.changePage(jQuery("#main"));
+    showMessage('No tienes favoritos.', 'Info', 'Ok');
 }
 
 // Function called when phonegap is ready
@@ -327,43 +347,34 @@ function setFullScreen() {
     // Set all pages with class="page-content" to be at least contentHeight
     jQuery('div[class="ui-content"]').css({'min-height': contentHeight + 'px'});
  }
- 
-function showProgress() {
-    jQuery('body').append('<div id="progress"><img src="/css/images/ajax-loader.gif" alt="" width="16" height="11" /> Loading...</div>');
-    jQuery('#progress').center();
-}
-function hideProgress() {
-    jQuery('#progress').remove();
-}
 
 function getLiString(){
 var liString = new String();
 
-liString = '<li data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="a" class="ui-btn ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-a ui-li-static"  style="padding: 0px;">';
-liString += '   <div class="ui-btn-inner ui-li ui-li-static ui-btn-up-a" style="padding: 0px;">';
-liString += '       <div class="ui-btn-text registro">';
-liString += '           <a href="#" data-transition="slide" onclick="gotoPromo(#ID#);">'; //<a href="#ID#">';
-liString += '               <table class="aviso">';
-liString += '                  <tr>';
-liString += '                     <td class="image" style="width: 50px;">';
-liString += '                        <img src="#IMAGE#" class="shadow image">';
-liString += '                     </td>';
-liString += '                     <td style="border-right: solid 1px #9CAAC6;">';
-liString += '                        <p class="comercio ui-li-desc">#COMERCIO#</p>';
-liString += '                        <p class="descripcion ui-li-desc">#DESCRIPCION#</p>';
-liString += '                        <p class="promo ui-li-desc">#PROMO#</p>';
-liString += '                     </td>';
-liString += '                     <td style="width: 30px;">';
-liString += '                        <div style="text-align: center;">';
-liString += '                            <div class="desde" style="display: #PRECIO_DESDE#;">desde</div>';
-liString += '                            <div style="border-bottom: solid 1px #9CAAC6;"><span class="precio">#PRECIO#</span></div>';
-liString += '                            <div style="vertical-align: middle; text-align: center"><span class="distancia">#DISTANCIA#</span></div>';
-liString += '                        </div>';
-liString += '                     </td>';
-//liString += '                     <td class="arrow-r ui-icon-shadow">&nbsp;</td>';
-liString += '                  </tr>';
-liString += '               </table>';
-liString += '            </a></div></div></li>';
+	liString = '<li data-corners="false" data-shadow="false" data-iconshadow="true" data-wrapperels="div" data-icon="arrow-r" data-iconpos="right" data-theme="a" class="ui-btn ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-a ui-li-static"  style="padding: 0px;">';
+	liString += '   <div class="ui-btn-inner ui-li ui-li-static ui-btn-up-a" style="padding: 0px;">';
+	liString += '       <div class="ui-btn-text registro">';
+	liString += '           <a href="#" data-transition="slide" onclick="gotoPromo(#ID#);">'; //<a href="#ID#">';
+	liString += '               <table class="aviso">';
+	liString += '                  <tr>';
+	liString += '                     <td class="image" style="width: 50px;">';
+	liString += '                        <img src="#IMAGE#" class="shadow image">';
+	liString += '                     </td>';
+	liString += '                     <td style="border-right: solid 1px #9CAAC6;">';
+	liString += '                        <p class="comercio ui-li-desc">#COMERCIO#</p>';
+	liString += '                        <p class="descripcion ui-li-desc">#DESCRIPCION#</p>';
+	liString += '                        <p class="promo ui-li-desc">#PROMO#</p>';
+	liString += '                     </td>';
+	liString += '                     <td style="width: 30px;">';
+	liString += '                        <div style="text-align: center;">';
+	liString += '                            <div class="desde" style="display: #PRECIO_DESDE#;">desde</div>';
+	liString += '                            <div style="border-bottom: solid 1px #9CAAC6;"><span class="precio">#PRECIO#</span></div>';
+	liString += '                            <div style="vertical-align: middle; text-align: center"><span class="distancia">#DISTANCIA#</span></div>';
+	liString += '                        </div>';
+	liString += '                     </td>';
+	liString += '                  </tr>';
+	liString += '               </table>';
+	liString += '            </a></div></div></li>';
 
     return liString;
 }
@@ -386,12 +397,12 @@ function getGeoLocation(){
 	        {maximumAge:600000, timeout:10000, enableHighAccuracy: false});
 }
 
-var onSuccess = function(position) {
-_lat = position.coords.latitude;
-_lng = position.coords.longitude;
-console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
-jQuery.mobile.hidePageLoadingMsg();
-};
+function onSuccess(position){
+	_lat = position.coords.latitude;
+	_lng = position.coords.longitude;
+	console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
+	jQuery.mobile.hidePageLoadingMsg();
+}
 
 function onError_highAccuracy(error) {
     var msg = "";
@@ -411,8 +422,8 @@ function onError_highAccuracy(error) {
 //onError Callback receives a PositionError object
 function onError(error) {
 	$.mobile.hidePageLoadingMsg();
-    msg = 'No se pudo obtener tu localización. Te sugerimos buscar por ciudad.';
-    showMessage(msg, 'Info', 'OK');
+    /*msg = 'No se pudo obtener tu localización. Te sugerimos buscar por ciudad.';
+    showMessage(msg, 'Info', 'OK');*/
     //gotoSearch();
     /*SAN JUSTO*/
 	//_lat = "-34.681774410598"; 
@@ -423,7 +434,7 @@ function onError(error) {
 //CONFIG
 function getRegionsUpdate(){
 	$.mobile.showPageLoadingMsg('a', "Cargando...", false);
-    console.log("getRegionsUpdate-last_update: "+_last_update);
+    console.log("getRegionsUpdate-last_update: " + _last_update);
     $.ajax({
         url: _baseServUri + 'getregions',
         dataType: 'jsonp',
@@ -442,6 +453,7 @@ function getRegionsUpdate(){
                     return;
                 }
                 addRegions(data.province, data.city);
+                setLastUpdate(new Date());
                 $.mobile.hidePageLoadingMsg();
         },
         error: function(jqXHR, textStatus, errorThrown){
@@ -553,8 +565,37 @@ function querySearchSuccess(tx, results) {
     }
 }
 function errorSearchDB(err){
-    console.log("error en la bÃºsqueda de promociones por ciudad: " + err.code);
+    console.log("error en la búsqueda de promociones por ciudad: " + err.code);
 }
 
+function showPromoImage(){
+	var _promo_id = _last_update = window.localStorage.getItem("activePromotion");
+	
+	$.ajax({
+        url: _baseServUri + 'getpromoimage',
+        dataType: 'jsonp',
+        data: {"promoid": _promo_id},
+        jsonp: 'jsoncallback',
+        contentType: "application/json; charset=utf-8",
+        timeout: 10000,
+        beforeSend: function (jqXHR, settings) {
+            url = settings.url + "?" + settings.data;
+        },
+        success: function(data, status){
+        	jQuery("#promo_image").attr("src", data.image);
+            $.mobile.hidePageLoadingMsg();
+            $.mobile.changePage(jQuery("#promo-image"));
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+        	$.mobile.hidePageLoadingMsg();
+            showMessage(
+            'Hubo un error accediendo a la imagen de la Promo. Por favor intenta más tarde...',
+            'Error',
+            'OK'
+            );
+        }
+    });
+	
+}
 
 

@@ -45,47 +45,56 @@
             </div>
         </div>
     </div>
+    
     <div data-role="page" id="one" data-theme="a">
         <div id="headerone" data-role="header" class="ui-header ui-header-fixed" data-position="fixed">
             <div style="height: 5em;">
-                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;"><img src="images/logo-promosalpaso70.png" style="height: 4em;" /></div>
+                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;"><img src="images/logo-promosalpaso70.png" style="height: 4em;" class="go-main"/></div>
             	<div style="float: right; padding-top: 0.5em; padding-right: 0.5em;">
-	                <a href="#main"><img style="height: 4em;" src="images/menu-icon.png"/></a>
+	                <a class="go-back"><img style="height: 4em;" src="images/menu-icon.png"/></a>
             	</div>    
             </div>
         </div>
-
         <div data-role="content" class="scrollable">
             <ul id="promolist" data-role="listview" class="ui-listview"></ul>
         </div>
     </div>
+
     <div data-role="page" id="detail">
         <div id="headerdetail" data-role="header" class="ui-header ui-header-fixed" data-position="fixed">
             <div style="height: 5em;">
-                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;"><img src="images/logo-promosalpaso70.png" style="height: 4em;" /></div>
+                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;">
+                	<img src="images/logo-promosalpaso70.png" style="height: 4em;" class="go-main"/>
+                </div>
             	<div style="float: right; padding-top: 0.5em; padding-right: 0.5em;">
-	                <a href="#main"><img style="height: 4em;" src="images/menu-icon.png"/></a>
+	                <a class="go-back"><img style="height: 4em;" src="images/menu-icon.png"/></a>
             	</div>    
             </div>
         </div>
         <div data-role="content" style="padding: 0px;" class="scrollable">
-            <div style="border-bottom: solid 1px #9CAAC6; width: 100%;">
-                <div style="float: left;"><img id="det-img-comercio" src="images/trebol.png" style="width: 3.5em; height: 3.5em; padding: 3px;"/></div>
-                <div id="det-name" class="det-comercio" style="width: 100%; text-align: center; margin-left: 2.5em;">Nombre Comercio</div>
-                <div id="det-direccion" class="comercio" style="width: 100%; text-align: center; padding-left: 2.5em;">Av de Mayo 25448 - Ramos Mejía</div>
+        	<div style="border-bottom: solid 1px #9CAAC6; width: 100%;" class="table-row">
+                <div style="float: left;" class="table-cell">
+                	<img id="det-img-comercio" src="images/trebol.png" style="width: 3.8em; height: 3.8em; padding: 3px;"/>
+                </div>
+                <div class="table-cell">
+                	<div id="det-name" class="det-comercio">Nombre Comercio</div>
+                	<div id="det-direccion" class="comercio">Av de Mayo 25448 - Ramos Mejía</div>
+                </div>
             </div>
             <div id="det-long_description" class="descripcion" style="width: 100%; font-size: 1.2em; padding: 0.5em;">Descripcion larga</div>
-            <div id="det-displayed_text" class="det-comercio" style="width: 100%; background-color: #E6E6E6; color:gray;">2X1 de Lunes a Viernes</div>
-            <div style="width: 100%; min-height: 70px;">
-                <div style="float: left; width: 66px;">
-                    <img id="det-img-promo" src="images/trebol.png" class="shadow image" style="padding: 3px; width: 60px; height: 60px;"/>
+            <div id="det-displayed_text" class="det-comercio" style="width: 100%; background-color: #E6E6E6; color:gray; padding: 0.15em">2X1 de Lunes a Viernes</div>
+            <div style="width: 100%; min-height: 75px;">
+                <div style="float: left; width: 66px; padding-top: 3px;">
+                	<a onClick="showPromoImage();" rel="external" class="ui-button" style="text-decoration: none; color: black; font-weight: bold;">
+                    	<img id="det-img-promo" src="images/trebol.png" class="shadow image" style="padding: 3px; width: 60px; height: 60px;"/>
+                    </a>
                 </div>
-                <div id="det-alarma" style="background-image: url(images/alert-icon.png); background-repeat: no-repeat; background-position: center center; float: right; height: 100%; min-height: 70px; width: 40px;">
+                <div id="det-alarma" style="background-image: url(images/alert-icon.png); background-repeat: no-repeat; background-position: center center; float: right; height: 100%; min-height: 70px; width: 60px;">
                     <div id="det-alarm_num" style="padding-top: 20px; font-size: 1.3em; color: white; text-align: center; height: 15px;">29</div>
                     <div id="det-alarm_type" style="font-size: 1em; color: white; text-align: center; height: 18px; vertical-align: top;">unid.</div>
                 </div>
                 <div id="det-precio">
-                    <div id="det-short_description" class="comercio" style="padding-left: 70px;">Torta de Frutillas</div>
+                    <div id="det-short_description" class="comercio" style="padding-left: 72px;">Torta de Frutillas</div>
                     <div id="precio_desde" class="desde-det">desde</div>
                     <div id="det-promo_value" class="precio" style="font-size: 2.5em;">2390</div>
                 </div>
@@ -93,7 +102,7 @@
             <div style="background-color: #E6E6E6;">
                 <div style="height: 65px; float: left; border-right: solid 1px #9CAAC6;">
                     <a href="#page-map" rel="external" class="ui-button" style="text-decoration: none; color: black; font-weight: bold;">
-                        <div style="float: left;">
+                        <div style="float: left; padding-top: 3px;">
                             <img id="det-img-mapa" src="images/map-icon.png" class="shadow image" style="padding: 3px; width: 60px; height: 60px; background-color: white;">
                         </div>
                         <div style="font-size: 1em; margin-left: 75px; width:60px; text-align: center; padding: 2em 0 0.8em 0;">VER MAPA</div>
@@ -118,18 +127,21 @@
                     </div>
                 </div>
             </div>
-           <div id="maspromos" style="width: 100%; height: 3em;">
-                <div class="ui-bar-a" style="height: 1.6em; color: white; font-size: 1.2em; padding: 0.4em 0 0.4em 0; text-shadow: 0 0 0;"><span id="barmaspromos" style="padding-left: 5px;">+ promos de #NOMBRECOMERCIO#</span></div>
-                <ul id="promolistmp" data-role="listview" class="ui-listview"></ul>     
-           </div>
+    		<div id="maspromos" style="width: 100%; height: 3em;">
+	        	<div class="ui-bar-a" style="min-height: 1.6em; color: white; font-size: 1.2em; padding: 0.4em 0 0.4em 0; text-shadow: 0 0 0;"><span id="barmaspromos" style="padding-left: 5px;">+ promos de #NOMBRECOMERCIO#</span></div>
+	            	<ul id="promolistmp" data-role="listview" class="ui-listview"></ul>     
+	           </div>
         </div>
     </div>    
+    
     <div data-role="page" id="page-map" data-theme="a">
     	<div id="headermap" data-role="header" class="ui-header ui-header-fixed" data-position="fixed" style="height: 5em;">
             <div style="height: 5em;">
-                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;"><img src="images/logo-promosalpaso70.png" style="height: 4em;" /></div>
+                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;">
+                	<img src="images/logo-promosalpaso70.png" style="height: 4em;" class="go-main"/>
+                </div>
             	<div style="float: right; padding-top: 0.5em; padding-right: 0.5em;">
-	                <a href="#main"><img style="height: 4em;" src="images/menu-icon.png"/></a>
+	                <a class="go-back"><img style="height: 4em;" src="images/menu-icon.png"/></a>
             	</div>    
             </div>
         </div>
@@ -140,12 +152,15 @@
             </div>
         </div>
     </div>
+    
     <div data-role="page" id="search" data-theme="a">
         <div id="headersearch" data-role="header" class="ui-header ui-header-fixed" data-position="fixed">
             <div style="height: 5em;">
-                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;"><img src="images/logo-promosalpaso70.png" style="height: 4em;" /></div>
+                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;">
+                	<img src="images/logo-promosalpaso70.png" style="height: 4em;" class="go-main"/>
+                </div>
             	<div style="float: right; padding-top: 0.5em; padding-right: 0.5em;">
-	                <a href="#main"><img style="height: 4em;" src="images/menu-icon.png"/></a>
+	                <a class="go-back"><img style="height: 4em;" src="images/menu-icon.png"/></a>
             	</div>    
             </div>
         </div>
@@ -158,8 +173,25 @@
                     <a id="a_search_button" href="#" data-role="button" data-inline="true">Buscar</a>
                 </div>
             </div>
-            
         </div>
     </div><!-- /page two -->
+    
+    <div data-role="page" id="promo-image" data-theme="a">
+        <div id="headersearch" data-role="header" class="ui-header ui-header-fixed" data-position="fixed">
+            <div style="height: 5em;">
+                <div style="float: left; padding-top: 0.5em; padding-left: 0.5em;">
+                	<img src="images/logo-promosalpaso70.png" style="height: 4em;" class="go-main"/>
+                </div>
+            	<div style="float: right; padding-top: 0.5em; padding-right: 0.5em;">
+	                <a class="go-back"><img style="height: 4em;" src="images/menu-icon.png"/></a>
+            	</div>    
+            </div>
+        </div>
+        <div data-role="content" class="scrollable">
+        	<div class="ui-corner-all ui-shadow">
+        		<img id="promo_image" alt="" src="" style="width:100%" class="go-back"/>
+        	</div>
+        </div>
+    </div>
 </body>
 </HTML>

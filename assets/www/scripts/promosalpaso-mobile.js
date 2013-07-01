@@ -16,7 +16,6 @@ jQuery(document).ready(function(){
         console.log("Ultima actualización: "+_last_update);    
         console.log("Actualizando ciudades...");
         getRegionsUpdate();
-        setLastUpdate(new Date());
         getGeoLocation();
     /*}*/
         /*var script = document.createElement("script");
@@ -75,3 +74,13 @@ function setLastUpdate(timestamp){
 function gotoCategories(){
 	
 }
+
+jQuery(document).on("click",'.go-back', function() {
+    event.preventDefault();
+    jQuery.mobile.back();
+});
+
+jQuery(document).on("click",'.go-main', function() {
+    event.preventDefault();
+    $.mobile.changePage(jQuery("#main"));
+});
