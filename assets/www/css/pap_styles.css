@@ -52,7 +52,7 @@
 .ui-body-a,
 .ui-overlay-a {
 	border: 1px solid #ff6a15 /*{a-body-border}*/;
-	color: #ff6a15 /*{a-body-color}*/;
+	color: #DDDDDD; /*#ff6a15 {a-body-color}*/;
 	text-shadow: 0 /*{a-body-shadow-x}*/ 1px /*{a-body-shadow-y}*/ 0 /*{a-body-shadow-radius}*/ #3D3D3D /*{a-body-shadow-color}*/;
 	background: #292929;
 }

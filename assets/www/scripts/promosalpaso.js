@@ -441,7 +441,7 @@ function getRegionsUpdate(){
         data: {"lastupdate": _last_update},
         jsonp: 'jsoncallback',
         contentType: "application/json; charset=utf-8",
-        timeout: 10000,
+        timeout: 15000,
         beforeSend: function (jqXHR, settings) {
             console.log(settings.url);
         },
@@ -569,6 +569,7 @@ function errorSearchDB(err){
 }
 
 function showPromoImage(){
+	$.mobile.showPageLoadingMsg('a', "Cargando imagen...", false);
 	var _promo_id = _last_update = window.localStorage.getItem("activePromotion");
 	
 	$.ajax({
@@ -598,4 +599,81 @@ function showPromoImage(){
 	
 }
 
+function sendMessage(){
+	var _email = $("#email").val();
+	var _message = $("#message").val();
+	var _uuid = $.mobile.uuid;
+	if(_email == "" || _message == ""){
+		showMessage(
+	            'Email y Mensaje son datos requeridos.',
+	            'Error',
+	            'OK'
+	            );
+		return;
+	}
+	$.mobile.showPageLoadingMsg('a', "Enviando mensaje...", false);
+	$.ajax({
+        url: _baseServUri + 'sendMessage',
+        dataType: 'jsonp',
+        data: {"email": _email,
+        	   "message": _message,
+        	   "uuid": _uuid,
+        	},
+        jsonp: 'jsoncallback',
+        contentType: "application/json; charset=utf-8",
+        timeout: 10000,
+        beforeSend: function (jqXHR, settings) {
+            console.log(settings.url);
+        },
+        success: function(data, status){
+        	$.mobile.hidePageLoadingMsg();
+            $.mobile.changePage(jQuery("#main"));
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+        	$.mobile.hidePageLoadingMsg();
+            showMessage(
+            'Hubo un error enviando el mensaje. Por favor intenta más tarde...',
+            'Error',
+            'OK'
+            );
+            $.mobile.changePage(jQuery("#main"));
+        }
+    });
+	$("#email").text("");
+	$("#message").text("");
+}
 
+function retrieveResponses(){
+	$.mobile.showPageLoadingMsg('a', "Recuperando respuestas...", false);
+	var _uuid = $.mobile.uuid;
+	$.ajax({
+        url: _baseServUri + 'retrieveresponses',
+        dataType: 'jsonp',
+        data: {"uuid": _uuid,},
+        jsonp: 'jsoncallback',
+        contentType: "application/json; charset=utf-8",
+        timeout: 10000,
+        beforeSend: function (jqXHR, settings) {
+            console.log(settings.url);
+        },
+        success: function(data, status){
+        	$.mobile.hidePageLoadingMsg();
+            $.each(date, function(i,item){
+            	
+            });
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+        	$.mobile.hidePageLoadingMsg();
+            /*showMessage(
+            'En este momento no podemos mostrarte las respuestas a tus mensajes.',
+            'Error',
+            'OK'
+            );*/
+        }
+    });
+}
+
+function gotoContact(){
+	retrieveResponses();
+	$.mobile.changePage(jQuery("#contact"));
+}
