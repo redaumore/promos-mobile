@@ -26,7 +26,7 @@
         android:allowBackup="false" 
         android:allowClearUserData="true">
         <activity
-            android:name=".promosalpasoActivity"
+            android:name="promosalpaso"
             android:configChanges="orientation|keyboardHidden|keyboard|locale">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

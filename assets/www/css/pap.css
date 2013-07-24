@@ -937,6 +937,6 @@ span>sup{
   background-position: -456px -144px;
 }
 
-ul li:nth-child(odd) { background-color:#eee; }
+/*ul li:nth-child(odd) { background-color:#eee; }*/
 ul li:nth-child(even) { background-color:#fff; }
 

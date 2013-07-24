@@ -14,26 +14,76 @@ var _firstAttemp = true;
 var _firstAttempFav = true;
 var _inFavorites = false;
 var _last_update;
+var _searchOrigin = "GPS"; /*CITY, FAV*/
 
 function refreshPromoList(){
+	_searchOrigin = "GPS"
 	event.preventDefault();
 	if(_lat == null || _lng == null){
-		showMessage('No hay informaciÛn acerca de tu localizaciÛn. Intenta nuestra b˙squeda por ciudad.', 'Info', 'Ok');
-        //gotoSearch();
-        return;
+		if(environment == "DEV" ){
+			/*SAN JUSTO*/
+			_lat = "-34.681774410598"; 
+			_lng = "-58.561710095183";
+			console.log("refreshPromoList: SAN JUSTO");
+		}
+		else{
+			showMessage('No se puede obtener tu localizaci√≥n. Intenta nuestra b√∫squeda por ciudad.', 'Info', 'Ok');
+			return;
+		}
 	}
-	$.mobile.showPageLoadingMsg('a', "Buscando promos...", false);
+	jQuery.mobile.showPageLoadingMsg('a', "Buscando promos...", false);
 	navigator.geolocation.getCurrentPosition(onSuccessPromoList, 
-	        onError_highAccuracy, 
-	        {maximumAge:600000, timeout:10000, enableHighAccuracy: false});
+	        onError, 
+	        {maximumAge:3000, timeout:6000, enableHighAccuracy: true});
 }
 
 function onSuccessPromoList(position) {
-	_lat = position.coords.latitude;
-	_lng = position.coords.longitude;
-	console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
-	loadPromoList();
+	if(position.coords.accuracy < 150){
+		_lat = position.coords.latitude;
+		_lng = position.coords.longitude;
+		console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
+		loadPromoList();
+	}
+	else{
+		console.log("Accuracy: "+position.coords.accuracy);
+		onError("");
+	}
 };
+
+function getGeoLocation(){
+	navigator.geolocation.getCurrentPosition(onSuccess, 
+	        onError, 
+	        {maximumAge:3000, timeout:6000, enableHighAccuracy: true});
+}
+
+function onSuccess(position){
+	if(position.coords.accuracy < 150){
+		_lat = position.coords.latitude;
+		_lng = position.coords.longitude;
+		console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
+		jQuery.mobile.hidePageLoadingMsg();
+	}
+	else{
+		console.log("Accuracy: "+position.coords.accuracy);
+		onError("");
+	}
+	
+}
+//onError Callback receives a PositionError object
+function onError(error) {
+	jQuery.mobile.hidePageLoadingMsg();
+	if(environment == "DEV" ){
+		/*SAN JUSTO*/
+		_lat = "-34.681774410598"; 
+		_lng = "-58.561710095183";
+		console.log("onError: SAN JUSTO");
+		loadPromoList();
+	}
+	else{
+		msg = 'No se pudo obtener tu localizaci√≥n. Te sugerimos buscar por ciudad.';
+		showMessage(msg, 'Info', 'OK');
+	}
+}
 
 function loadPromoList(){
     $.ajax({
@@ -144,12 +194,12 @@ function getPromoRecord(promo){
     	liString = liString.replace("#IMAGE#", promo.path);
     else
     	liString = liString.replace("#IMAGE#", promo.logo);
-    	//liString = liString.replace("#IMAGE#", "images/photo_error.png");
     liString = liString.replace("#COMERCIO#", promo.name);
     liString = liString.replace("#DESCRIPCION#", promo.short_description);        
     liString = liString.replace("#PROMO#", promo.displayed_text);
     liString = liString.replace("#PRECIO_DESDE#", (promo.value_since == 1)?"inline":"none");
     liString = liString.replace("#PRECIO#", formatPrice(promo.promo_value));
+    
     liString = liString.replace("#DISTANCIA#", promo.distance);
     return liString;
 }
@@ -194,11 +244,7 @@ function callPromoDetail(promotion_id){
         },
         error: function(jqXHR, textStatus, errorThrown){
         	$.mobile.hidePageLoadingMsg();
-            showMessage(
-            'Hubo un error accediendo a los datos de la Promo. Por favor intenta m√°s tarde...',
-            'Error',
-            'OK'
-            );
+            showMessage('Hubo un error accediendo a los datos de la Promo. Por favor intenta m√°s tarde...', 'Error', 'OK');
         }
     });
     return promotion_detail;
@@ -250,6 +296,10 @@ function loadPromoDetail(item){
             jQuery("#det-alarm_type").html("d√≠as");
         } 
     }
+    if(_searchOrigin == "GPS")
+    	jQuery("#det-distance").show();
+    else
+    	jQuery("#det-distance").hide();
     if(item.value_since == "1")
         jQuery("#precio_desde").show();
     else
@@ -368,8 +418,9 @@ var liString = new String();
 	liString += '                     <td style="width: 30px;">';
 	liString += '                        <div style="text-align: center;">';
 	liString += '                            <div class="desde" style="display: #PRECIO_DESDE#;">desde</div>';
-	liString += '                            <div style="border-bottom: solid 1px #9CAAC6;"><span class="precio">#PRECIO#</span></div>';
-	liString += '                            <div style="vertical-align: middle; text-align: center"><span class="distancia">#DISTANCIA#</span></div>';
+	liString += '                            <div><span class="precio">#PRECIO#</span></div>';
+	if(_searchOrigin == "GPS")
+		liString += '                            <div style="border-top: solid 1px #9CAAC6; vertical-align: middle; text-align: center"><span class="distancia">#DISTANCIA#</span></div>';
 	liString += '                        </div>';
 	liString += '                     </td>';
 	liString += '                  </tr>';
@@ -390,46 +441,7 @@ function formatPrice(price){
     return formatedPrice;
 }
 
-function getGeoLocation(){
-	$.mobile.showPageLoadingMsg('a', "Buscando tu localizaciÛn...", false);
-	navigator.geolocation.getCurrentPosition(onSuccess, 
-	        onError_highAccuracy, 
-	        {maximumAge:600000, timeout:10000, enableHighAccuracy: false});
-}
 
-function onSuccess(position){
-	_lat = position.coords.latitude;
-	_lng = position.coords.longitude;
-	console.log("Geoposition: "+_lat+", "+_lng+" +/- "+position.coords.accuracy);
-	jQuery.mobile.hidePageLoadingMsg();
-}
-
-function onError_highAccuracy(error) {
-    var msg = "";
-    //if(error.code == 2)
-        //msg = 'No se pudo obtener datos del GPS. Se localizar√° por 3G, por lo que la localizaci√≥n puede presentar un desv√≠o de 150 mts aproximadamente.';
-        // Attempt to get GPS loc timed out after 5 seconds, 
-        // try low accuracy location
-        //showMessage(msg, 'GPS', 'OK');
-        navigator.geolocation.getCurrentPosition(
-                   onSuccess, 
-                   onError,
-                   {maximumAge:600000, timeout:10000, enableHighAccuracy: true});
-        return;
-    //}
-}
-
-//onError Callback receives a PositionError object
-function onError(error) {
-	$.mobile.hidePageLoadingMsg();
-    /*msg = 'No se pudo obtener tu localizaciÛn. Te sugerimos buscar por ciudad.';
-    showMessage(msg, 'Info', 'OK');*/
-    //gotoSearch();
-    /*SAN JUSTO*/
-	//_lat = "-34.681774410598"; 
-	//_lng = "-58.561710095183" ;
-    //loadPromoList();
-}
 
 //CONFIG
 function getRegionsUpdate(){
@@ -462,7 +474,8 @@ function getRegionsUpdate(){
             $.mobile.hidePageLoadingMsg();
         }
     });
-}    
+}
+
 function addRegions(provinces, cities){
     var db = window.openDatabase("promosalpaso", "1.0", "Promos al Paso", 300000);
     db.transaction(function(tx){populateRegionsDB(tx, provinces, cities)}, errorCB, successCB);
@@ -541,6 +554,7 @@ function queryCitySuccess(tx, results){
 
 //SEARCH
 function doSearch(){
+	_searchOrigin = "CITY"
     var city_id = jQuery("#city_select option:selected").val();
     if(city_id != null){
         jQuery("#promolist").html("");
@@ -590,7 +604,7 @@ function showPromoImage(){
         error: function(jqXHR, textStatus, errorThrown){
         	$.mobile.hidePageLoadingMsg();
             showMessage(
-            'Hubo un error accediendo a la imagen de la Promo. Por favor intenta m·s tarde...',
+            'Hubo un error accediendo a la imagen de la Promo. Por favor intenta m√°s tarde...',
             'Error',
             'OK'
             );
@@ -632,7 +646,7 @@ function sendMessage(){
         error: function(jqXHR, textStatus, errorThrown){
         	$.mobile.hidePageLoadingMsg();
             showMessage(
-            'Hubo un error enviando el mensaje. Por favor intenta m·s tarde...',
+            'Hubo un error enviando el mensaje. Por favor intenta m√°s tarde...',
             'Error',
             'OK'
             );
@@ -677,3 +691,5 @@ function gotoContact(){
 	retrieveResponses();
 	$.mobile.changePage(jQuery("#contact"));
 }
+
+
