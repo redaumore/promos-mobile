@@ -22,8 +22,8 @@ function refreshPromoList(){
 	if(_lat == null || _lng == null){
 		if(environment == "DEV" ){
 			/*SAN JUSTO*/
-			_lat = "-34.681774410598"; 
-			_lng = "-58.561710095183";
+			_lat = "-34.682919"; 
+			_lng = "-58.572397";
 			console.log("refreshPromoList: SAN JUSTO");
 		}
 		else{
@@ -74,8 +74,8 @@ function onError(error) {
 	jQuery.mobile.hidePageLoadingMsg();
 	if(environment == "DEV" ){
 		/*SAN JUSTO*/
-		_lat = "-34.681774410598"; 
-		_lng = "-58.561710095183";
+		_lat = "-34.682919"; 
+		_lng = "-58.572397";
 		console.log("onError: SAN JUSTO");
 		loadPromoList();
 	}
@@ -240,6 +240,7 @@ function callPromoDetail(promotion_id){
         success: function(data, status){
                 loadPromoDetail(data);
                 $.mobile.hidePageLoadingMsg();
+                zoom = null;
                 $.mobile.changePage(jQuery("#detail"));
         },
         error: function(jqXHR, textStatus, errorThrown){
